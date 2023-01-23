@@ -4,7 +4,6 @@ import (
 	bb "github.com/torotonnato/gobarebones"
 )
 
-func main()
-{
+func main() {
 	bb.Test()
 }
