@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/torotonnato/gobarebones" bb
+	bb "github.com/torotonnato/gobarebones"
 )
 
 func main()
