@@ -11,7 +11,7 @@ import (
 func main() {
 	config := bb.Config{
 		Region: bb.DD_EU,
-		APIKey: "3ccbadec4aeed522b25d69c628ae19a5",
+		APIKey: "(redacted)",
 	}
 	err := bb.Setup(&config)
 	if err != nil {
