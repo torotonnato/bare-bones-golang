@@ -21,5 +21,5 @@ func Validate() (bool, error) {
 	if status == http.StatusOK && resp.Valid != nil {
 		return *resp.Valid, nil
 	}
-	return false, InvalidResponse{}
+	return false, Error{Code: InvalidResponse}
 }

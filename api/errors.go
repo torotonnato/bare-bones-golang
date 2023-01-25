@@ -4,24 +4,27 @@ import (
 	"strings"
 )
 
-type GenericError struct {
-	msg string
+const (
+	Generic = iota + 1
+	BadRequest
+	InvalidResponse
+)
+
+type Error struct {
+	Code   int
+	AuxMsg string
 }
 
-func (e GenericError) Error() string {
-	return e.msg
-}
-
-type BadRequest struct{}
-
-func (e BadRequest) Error() string {
-	return "bad request"
-}
-
-type InvalidResponse struct{}
-
-func (e InvalidResponse) Error() string {
-	return "invalid response from DataDog server"
+func (e Error) Error() string {
+	switch e.Code {
+	case Generic:
+		return e.AuxMsg
+	case BadRequest:
+		return "api: bad request"
+	case InvalidResponse:
+		return "api: invalid response from DataDog server"
+	}
+	return "api: unknown error"
 }
 
 // Common API error oject definition
@@ -40,10 +43,11 @@ func (e *APIErrors) ToError() error {
 	err := *e.Errors //Alias
 	if len(err) == 1 {
 		if err[0] == "Bad request" {
-			return BadRequest{}
+			return Error{Code: BadRequest}
 		}
 	}
-	return GenericError{
-		strings.Join(*e.Errors, ", "),
+	return Error{
+		Code:   Generic,
+		AuxMsg: strings.Join(*e.Errors, ", "),
 	}
 }

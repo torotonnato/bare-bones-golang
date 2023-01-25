@@ -27,5 +27,5 @@ func Series(s *model.Series) error {
 	if status == http.StatusAccepted {
 		return nil
 	}
-	return InvalidResponse{}
+	return Error{Code: InvalidResponse}
 }

@@ -1,7 +1,17 @@
 package agent
 
-type AlreadyExists struct{}
+const (
+	MetricAlreadyExists = 1
+)
 
-func (e AlreadyExists) Error() string {
-	return "metric already registered"
+type Error struct {
+	Code int
+}
+
+func (e Error) Error() string {
+	switch e.Code {
+	case MetricAlreadyExists:
+		return "agent: metric already registered"
+	}
+	return "agent: unknown error"
 }
