@@ -9,12 +9,6 @@ import (
 	"github.com/torotonnato/gobarebones/config"
 )
 
-type request struct {
-	Method   string
-	EndPoint string
-	Data     []byte
-}
-
 func Request(method string, endPoint string, optData []byte, response interface{}) (int, error) {
 	var req *http.Request
 	var err error
