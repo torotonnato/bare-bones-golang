@@ -6,7 +6,7 @@ import (
 
 type responseValidate struct {
 	Valid *bool `json:"valid"`
-	commonErrors
+	APIErrors
 }
 
 func Validate() (bool, error) {
@@ -15,11 +15,11 @@ func Validate() (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	if resp.HasError() {
+		return false, resp.ToError()
+	}
 	if status == http.StatusOK && resp.Valid != nil {
 		return *resp.Valid, nil
-	}
-	if resp.Errors != nil {
-		return false, resp.ToError()
 	}
 	return false, InvalidResponse{}
 }

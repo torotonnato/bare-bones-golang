@@ -25,11 +25,15 @@ func (e InvalidResponse) Error() string {
 }
 
 // Common APIs' error return definition
-type commonErrors struct {
+type APIErrors struct {
 	Errors *[]string `json:"errors"` //optional
 }
 
-func (e *commonErrors) ToError() error {
+func (e *APIErrors) HasError() bool {
+	return e.Errors != nil
+}
+
+func (e *APIErrors) ToError() error {
 	if e.Errors == nil {
 		return nil
 	}

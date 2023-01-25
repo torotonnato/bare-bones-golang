@@ -8,7 +8,7 @@ import (
 )
 
 type responseSeries struct {
-	commonErrors
+	APIErrors
 }
 
 func Series(s *model.Series) error {
@@ -21,11 +21,11 @@ func Series(s *model.Series) error {
 	if err != nil {
 		return err
 	}
-	if (status == http.StatusAccepted) && (resp.Errors == nil) {
-		return nil
-	}
-	if resp.Errors != nil {
+	if resp.HasError() {
 		return resp.ToError()
+	}
+	if status == http.StatusAccepted {
+		return nil
 	}
 	return InvalidResponse{}
 }
