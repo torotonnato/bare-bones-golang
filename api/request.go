@@ -10,16 +10,9 @@ import (
 )
 
 func Request(method string, endPoint string, optData []byte, response interface{}) (int, error) {
-	var req *http.Request
-	var err error
 	uri := config.Env.Region + endPoint
-	if optData != nil {
-		optDataBuff := bytes.NewBuffer(optData)
-		req, err = http.NewRequest(method, uri, optDataBuff)
-	} else {
-		req, err = http.NewRequest(method, uri, nil)
-	}
-
+	optDataBuff := bytes.NewBuffer(optData)
+	req, err := http.NewRequest(method, uri, optDataBuff)
 	if err != nil {
 		return 0, err
 	}
