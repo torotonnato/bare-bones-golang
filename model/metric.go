@@ -6,6 +6,7 @@ import (
 )
 
 type Metric struct {
+	id             int32
 	Interval       int64     `json:"interval,omitempty"`
 	Metadata       *Metadata `json:"metadata,omitempty"`
 	Metric         string    `json:"metric"`
@@ -22,6 +23,7 @@ func NewMetric(name string, t int32) (*Metric, error) {
 		return nil, errors.New("invalid type")
 	}
 	m := &Metric{}
+	m.id = GetUniqueId()
 	m.Metric = name
 	m.Type = t
 	return m, nil
@@ -29,6 +31,7 @@ func NewMetric(name string, t int32) (*Metric, error) {
 
 func (m *Metric) Clone() *Metric {
 	clone := Metric{
+		id:       GetUniqueId(),
 		Interval: m.Interval,
 		Metadata: &Metadata{
 			Origin: m.Metadata.Origin,
