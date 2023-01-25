@@ -27,6 +27,26 @@ func NewMetric(name string, t int32) (*Metric, error) {
 	return m, nil
 }
 
+func (m *Metric) Clone() *Metric {
+	clone := Metric{
+		Interval: m.Interval,
+		Metadata: &Metadata{
+			Origin: m.Metadata.Origin,
+		},
+		Metric: m.Metric,
+		Points: []Point{},
+		Resources: &Resource{
+			Name: m.Resources.Name,
+			Type: m.Resources.Type,
+		},
+		SourceTypeName: m.SourceTypeName,
+		Tags:           m.Tags,
+		Type:           m.Type,
+		Unit:           m.Unit,
+	}
+	return &clone
+}
+
 func (m *Metric) SetInterval(interval int64) *Metric {
 	if m.Type != TYPE_RATE && m.Type != TYPE_COUNT {
 		m.Interval = 0
