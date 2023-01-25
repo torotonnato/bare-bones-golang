@@ -1,7 +1,7 @@
 package agent
 
 const (
-	MetricAlreadyExists = 1
+	MetricAlreadyExists = iota + 1
 )
 
 type Error struct {
