@@ -3,7 +3,9 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"math"
 	"os"
+	"time"
 
 	agent "github.com/torotonnato/gobarebones/agent"
 	api "github.com/torotonnato/gobarebones/api"
@@ -33,7 +35,6 @@ func setup() {
 }
 
 func main() {
-
 	setup()
 
 	t, _ := model.NewMetric("system.sensors.temp1", model.TYPE_GAUGE)
@@ -51,17 +52,18 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-
+	agent.ShowMetrics()
 	log.Println("Process started...")
+	agent.Start()
 
-	/*
-		for count := 0; count < 100; count++ {
-			temp := math.Sin(6.28 * float64(count) / 100.0)
-			light := float64((count % 50) + 30)
-			t.Sample(temp)
-			l.Sample(light)
-			time.Sleep(100 * time.Millisecond)
-			log.Println(count)
-		}
-	*/
+	count := 0
+	for {
+		temp := math.Sin(6.28 * float64(count) / 100.0)
+		light := float64((count % 50) + 30)
+		agent.PushMetric(t, temp)
+		agent.PushMetric(l, light)
+		time.Sleep(100 * time.Millisecond)
+		log.Println(count)
+		count++
+	}
 }

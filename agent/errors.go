@@ -2,6 +2,8 @@ package agent
 
 const (
 	MetricAlreadyExists = iota + 1
+	AgentNotRunning
+	AgentAlreadyRunning
 )
 
 type Error struct {

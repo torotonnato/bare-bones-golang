@@ -14,7 +14,7 @@ type Metric struct {
 }
 
 func NewMetric(name string, t int32) (*Metric, error) {
-	if t < TYPE_UNSPECIFIED || t > TYPE_GAUGE {
+	if !IsMetricTypeValid(t) {
 		return nil, MetricTypeError{}
 	}
 	m := &Metric{}

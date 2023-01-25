@@ -6,6 +6,12 @@ type Config struct {
 }
 
 const (
+	AgentMinMetricElementsPerSeries  = 100
+	AgentAvgDistinctMetricsPerSeries = 10
+	AgentAvgPointsPerMetric          = 10
+)
+
+const (
 	DD_COM     = "https://api.datadoghq.com"
 	US3_DD_COM = "https://api.us3.datadoghq.com"
 	US5_DD_COM = "https://us5.datadoghq.com"
