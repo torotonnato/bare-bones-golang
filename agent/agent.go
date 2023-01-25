@@ -62,8 +62,9 @@ func Start() error {
 	if state.isRunning {
 		return Error{Code: AgentAlreadyRunning}
 	}
-	state.dataChan = make(chan interface{}, config.AgentChannelCapacity)
-	state.cmdChan = make(chan int, config.AgentChannelCapacity)
+	capacity := config.AgentChannelCapacity
+	state.dataChan = make(chan interface{}, capacity)
+	state.cmdChan = make(chan int, capacity)
 	state.Add(1)
 	tickerStart()
 	go worker()
