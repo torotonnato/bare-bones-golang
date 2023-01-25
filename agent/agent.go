@@ -11,60 +11,88 @@ const (
 	agentFlush
 )
 
-type state struct {
+var state struct {
 	isRunning bool
-	channel   chan interface{}
+	dataChan  chan interface{}
+	cmdChan   chan int
 	sync.WaitGroup
+	sync.Mutex
 }
 
-var agent state
+func blackhole(x interface{}) {}
+
+func drainChannels() {
+	for item := range state.dataChan {
+		blackhole(item)
+	}
+	for cmd := range state.cmdChan {
+		blackhole(cmd)
+	}
+}
 
 func worker() {
 	metricsBuff := MetricsAccBuffer{}
-	for item := range agent.channel {
-		switch i := item.(type) {
-		case MetricItem:
-			metricsBuff.Accumulate(&i)
-			if metricsBuff.PastLimit() {
-				metricsBuff.Send()
+	for {
+		select {
+		case item := <-state.dataChan:
+			switch data := item.(type) {
+			case MetricItem:
+				metricsBuff.Accumulate(&data)
+				if metricsBuff.PastLimit() {
+					metricsBuff.Send()
+					tickerReset()
+				}
 			}
-		case int:
-			if i == agentStop {
-				agent.Done()
+		case cmd := <-state.cmdChan:
+			if cmd == agentStop {
+				state.Done()
 				return
-			} else if i == agentFlush {
+			} else if cmd == agentFlush {
 				metricsBuff.Send()
 			}
+		case <-beat.ticker.C:
+			metricsBuff.Send()
 		}
 	}
 }
 
 func Start() error {
-	if agent.isRunning {
+	state.Lock()
+	defer state.Unlock()
+	if state.isRunning {
 		return Error{Code: AgentAlreadyRunning}
 	}
-	agent.isRunning = true
-	agent.channel = make(chan interface{}, config.AgentChannelCapacity)
-	agent.Add(1)
+	state.dataChan = make(chan interface{}, config.AgentChannelCapacity)
+	state.cmdChan = make(chan int, config.AgentChannelCapacity)
+	state.Add(1)
+	tickerStart()
 	go worker()
+	state.isRunning = true
 	return nil
 }
 
 func Flush() error {
-	if !agent.isRunning {
+	state.Lock()
+	defer state.Unlock()
+	if !state.isRunning {
 		return Error{Code: AgentNotRunning}
 	}
-	agent.channel <- agentFlush
+	tickerReset()
+	state.cmdChan <- agentFlush
 	return nil
 }
 
 func Stop() error {
-	if !agent.isRunning {
+	state.Lock()
+	defer state.Unlock()
+	if !state.isRunning {
 		return Error{Code: AgentNotRunning}
 	}
-	agent.channel <- agentStop
-	agent.Wait()
-	agent.isRunning = false
+	state.cmdChan <- agentStop
+	state.Wait()
+	tickerStop()
+	drainChannels()
+	state.isRunning = false
 	return nil
 }
 

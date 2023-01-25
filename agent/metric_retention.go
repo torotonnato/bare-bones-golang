@@ -1,8 +1,6 @@
 package agent
 
 import (
-	"fmt"
-	"log"
 	"sort"
 
 	"github.com/torotonnato/gobarebones/api"
@@ -65,12 +63,10 @@ func (a *MetricsAccBuffer) ToSeries() *model.Series {
 }
 
 func (a *MetricsAccBuffer) Send() error {
-	log.Println("agent: sending")
 	s := a.ToSeries()
 	if s != nil {
 		err := api.Series(s)
 		a.Clear()
-		fmt.Println(*s, err)
 		return err
 	}
 	return nil

@@ -52,7 +52,6 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-	agent.ShowMetrics()
 	log.Println("Process started...")
 	agent.Start()
 

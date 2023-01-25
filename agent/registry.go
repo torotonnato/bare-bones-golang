@@ -1,8 +1,6 @@
 package agent
 
 import (
-	"fmt"
-
 	"github.com/torotonnato/gobarebones/model"
 )
 
@@ -16,10 +14,4 @@ func RegisterMetric(m *model.Metric) error {
 		regMetrics[m.ID] = *m.DeepCopy()
 	}
 	return nil
-}
-
-func ShowMetrics() {
-	for k, v := range regMetrics {
-		fmt.Println("ID: ", k, " -> ", v)
-	}
 }

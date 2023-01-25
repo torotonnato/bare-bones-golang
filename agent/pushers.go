@@ -7,7 +7,7 @@ import (
 )
 
 func PushMetric(m *model.Metric, value float64) error {
-	if !agent.isRunning {
+	if !state.isRunning {
 		return Error{Code: AgentNotRunning}
 	}
 	item := MetricItem{
@@ -17,6 +17,6 @@ func PushMetric(m *model.Metric, value float64) error {
 			Timestamp: time.Now().Unix(),
 		},
 	}
-	agent.channel <- item
+	state.dataChan <- item
 	return nil
 }
