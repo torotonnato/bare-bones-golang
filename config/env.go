@@ -1,4 +1,4 @@
-package gobarebones
+package config
 
 type Config struct {
 	Region string
@@ -13,13 +13,8 @@ const (
 	DD_GOV     = "https://ddog-gov.com"
 )
 
-var config Config
+var Env Config
 
-func Setup(c *Config) error {
-	config = *c
-	valid, err := apiValidate()
-	if valid {
-		return nil
-	}
-	return err
+func Setup(config *Config) {
+	Env = *config
 }

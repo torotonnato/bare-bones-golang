@@ -1,4 +1,4 @@
-package gobarebones
+package api
 
 import (
 	"errors"

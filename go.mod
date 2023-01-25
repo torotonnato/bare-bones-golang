@@ -1,3 +1,3 @@
 module github.com/torotonnato/gobarebones
 
-go 1.15
+go 1.19
