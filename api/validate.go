@@ -1,7 +1,6 @@
 package api
 
 import (
-	"errors"
 	"net/http"
 )
 
@@ -22,5 +21,5 @@ func Validate() (bool, error) {
 	if resp.Errors != nil {
 		return false, resp.ToError()
 	}
-	return false, errors.New("invalid and unexpected response")
+	return false, InvalidResponse{}
 }

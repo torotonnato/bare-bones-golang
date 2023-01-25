@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	"github.com/torotonnato/gobarebones/model"
@@ -28,5 +27,5 @@ func Series(s *model.Series) error {
 	if resp.Errors != nil {
 		return resp.ToError()
 	}
-	return errors.New("invalid and unexpected response")
+	return InvalidResponse{}
 }
