@@ -9,6 +9,7 @@ const (
 	AgentMinMetricElementsPerSeries  = 100
 	AgentAvgDistinctMetricsPerSeries = 10
 	AgentAvgPointsPerMetric          = 10
+	AgentChannelCapacity             = 256
 )
 
 const (

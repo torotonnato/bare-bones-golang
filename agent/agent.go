@@ -1,12 +1,9 @@
 package agent
 
 import (
-	"log"
-	"time"
-
 	"sync"
 
-	"github.com/torotonnato/gobarebones/model"
+	"github.com/torotonnato/gobarebones/config"
 )
 
 const (
@@ -15,27 +12,12 @@ const (
 )
 
 type state struct {
-	channel chan interface{}
+	isRunning bool
+	channel   chan interface{}
 	sync.WaitGroup
-	running bool
 }
 
 var agent state
-
-func PushMetric(m *model.Metric, value float64) error {
-	if !agent.running {
-		return Error{Code: AgentNotRunning}
-	}
-	item := MetricItem{
-		From: m.ID,
-		Point: model.Point{
-			Value:     value,
-			Timestamp: time.Now().Unix(),
-		},
-	}
-	agent.channel <- item
-	return nil
-}
 
 func worker() {
 	metricsBuff := MetricsAccBuffer{}
@@ -58,20 +40,18 @@ func worker() {
 }
 
 func Start() error {
-	log.Println("Agent started")
-	if agent.running {
+	if agent.isRunning {
 		return Error{Code: AgentAlreadyRunning}
 	}
-	agent.running = true
-	agent.channel = make(chan interface{}, 256)
+	agent.isRunning = true
+	agent.channel = make(chan interface{}, config.AgentChannelCapacity)
 	agent.Add(1)
 	go worker()
 	return nil
 }
 
 func Flush() error {
-	log.Println("Agent flush")
-	if !agent.running {
+	if !agent.isRunning {
 		return Error{Code: AgentNotRunning}
 	}
 	agent.channel <- agentFlush
@@ -79,12 +59,18 @@ func Flush() error {
 }
 
 func Stop() error {
-	log.Println("Agent stopped")
-	if !agent.running {
+	if !agent.isRunning {
 		return Error{Code: AgentNotRunning}
 	}
 	agent.channel <- agentStop
 	agent.Wait()
-	agent.running = false
+	agent.isRunning = false
 	return nil
+}
+
+func FlushAndStop() error {
+	if err := Flush(); err != nil {
+		return err
+	}
+	return Stop()
 }
