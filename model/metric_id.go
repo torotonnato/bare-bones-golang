@@ -2,8 +2,10 @@ package model
 
 import "sync/atomic"
 
-var globalMetricId int32 = 0
+type MetricID = int32
 
-func GetUniqueId() int32 {
-	return atomic.AddInt32(&globalMetricId, 1)
+var globalMetricID MetricID = 0
+
+func GetUniqueMetricID() MetricID {
+	return atomic.AddInt32(&globalMetricID, 1)
 }

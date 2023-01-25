@@ -5,7 +5,7 @@ import (
 )
 
 type Metric struct {
-	Id             int32     `json:"-"`
+	ID             MetricID  `json:"-"`
 	Interval       int64     `json:"interval,omitempty"`
 	Metadata       *Metadata `json:"metadata,omitempty"`
 	Metric         string    `json:"metric"`
@@ -22,7 +22,7 @@ func NewMetric(name string, t int32) (*Metric, error) {
 		return nil, errors.New("invalid type")
 	}
 	m := &Metric{}
-	m.Id = GetUniqueId()
+	m.ID = GetUniqueMetricID()
 	m.Metric = name
 	m.Type = t
 	return m, nil
@@ -30,7 +30,7 @@ func NewMetric(name string, t int32) (*Metric, error) {
 
 func (m *Metric) DeepCopy() *Metric {
 	deepCopy := Metric{
-		Id:             m.Id,
+		ID:             m.ID,
 		Interval:       m.Interval,
 		Metadata:       nil,
 		Metric:         m.Metric,
@@ -57,7 +57,7 @@ func (m *Metric) DeepCopy() *Metric {
 
 func (m *Metric) Clone() *Metric {
 	clone := m.DeepCopy()
-	m.Id = GetUniqueId()
+	m.ID = GetUniqueMetricID()
 	return clone
 }
 
