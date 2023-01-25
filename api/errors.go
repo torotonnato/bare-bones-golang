@@ -24,7 +24,7 @@ func (e InvalidResponse) Error() string {
 	return "invalid response from DataDog server"
 }
 
-// Common APIs' error return definition
+// Common API error oject definition
 type APIErrors struct {
 	Errors *[]string `json:"errors"` //optional
 }
