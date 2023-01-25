@@ -1,9 +1,5 @@
 package model
 
-import (
-	"errors"
-)
-
 type Metric struct {
 	ID             MetricID  `json:"-"`
 	Interval       int64     `json:"interval,omitempty"`
@@ -19,7 +15,7 @@ type Metric struct {
 
 func NewMetric(name string, t int32) (*Metric, error) {
 	if t < TYPE_UNSPECIFIED || t > TYPE_GAUGE {
-		return nil, errors.New("invalid type")
+		return nil, MetricTypeError{}
 	}
 	m := &Metric{}
 	m.ID = GetUniqueMetricID()
