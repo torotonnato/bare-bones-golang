@@ -1,12 +1,11 @@
 package model
 
 import (
-	"encoding/json"
 	"errors"
 )
 
 type Metric struct {
-	id             int32
+	Id             int32     `json:"-"`
 	Interval       int64     `json:"interval,omitempty"`
 	Metadata       *Metadata `json:"metadata,omitempty"`
 	Metric         string    `json:"metric"`
@@ -23,31 +22,43 @@ func NewMetric(name string, t int32) (*Metric, error) {
 		return nil, errors.New("invalid type")
 	}
 	m := &Metric{}
-	m.id = GetUniqueId()
+	m.Id = GetUniqueId()
 	m.Metric = name
 	m.Type = t
 	return m, nil
 }
 
-func (m *Metric) Clone() *Metric {
-	clone := Metric{
-		id:       GetUniqueId(),
-		Interval: m.Interval,
-		Metadata: &Metadata{
-			Origin: m.Metadata.Origin,
-		},
-		Metric: m.Metric,
-		Points: []Point{},
-		Resources: &Resource{
-			Name: m.Resources.Name,
-			Type: m.Resources.Type,
-		},
+func (m *Metric) DeepCopy() *Metric {
+	deepCopy := Metric{
+		Id:             m.Id,
+		Interval:       m.Interval,
+		Metadata:       nil,
+		Metric:         m.Metric,
+		Points:         []Point{},
+		Resources:      nil,
 		SourceTypeName: m.SourceTypeName,
 		Tags:           m.Tags,
 		Type:           m.Type,
 		Unit:           m.Unit,
 	}
-	return &clone
+	if m.Metadata != nil {
+		deepCopy.Metadata = &Metadata{
+			Origin: m.Metadata.Origin,
+		}
+	}
+	if m.Resources != nil {
+		deepCopy.Resources = &Resource{
+			Name: m.Resources.Name,
+			Type: m.Resources.Type,
+		}
+	}
+	return &deepCopy
+}
+
+func (m *Metric) Clone() *Metric {
+	clone := m.DeepCopy()
+	m.Id = GetUniqueId()
+	return clone
 }
 
 func (m *Metric) SetInterval(interval int64) *Metric {
@@ -89,21 +100,3 @@ func (m *Metric) SetUnit(unit string) *Metric {
 	m.Unit = unit
 	return m
 }
-
-func (m *Metric) toJSON() ([]byte, error) {
-	return json.Marshal(m)
-}
-
-/*
-func (m *Metric) Sample(val float64) {
-	p := Point{
-		time.Now().Unix(),
-		val,
-	}
-	sample := agentSample{
-		m:           m,
-		metricPoint: p,
-	}
-	agentChannel <- sample
-}
-*/

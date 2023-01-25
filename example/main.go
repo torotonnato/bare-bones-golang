@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	agent "github.com/torotonnato/gobarebones/agent"
 	api "github.com/torotonnato/gobarebones/api"
 	config "github.com/torotonnato/gobarebones/config"
 	model "github.com/torotonnato/gobarebones/model"
@@ -38,10 +39,18 @@ func main() {
 	t, _ := model.NewMetric("system.sensors.temp1", model.TYPE_GAUGE)
 	tags_t := model.NewTags().Add("sensor:temp1").Add("prod:sensor")
 	t.SetTags(tags_t)
+	err := agent.RegisterMetric(t)
+	if err != nil {
+		log.Println(err)
+	}
 
 	l, _ := model.NewMetric("system.sensors.light", model.TYPE_GAUGE)
 	tags_l := model.NewTags().Add("sensor:light").Add("prod:sensor")
 	l.SetTags(tags_l)
+	err = agent.RegisterMetric(l)
+	if err != nil {
+		log.Println(err)
+	}
 
 	log.Println("Process started...")
 
