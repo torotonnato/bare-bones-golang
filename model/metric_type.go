@@ -1,14 +1,20 @@
 package model
 
+type MetricType int32
+
 const (
-	TYPE_UNSPECIFIED int32 = 0
-	TYPE_COUNT       int32 = 1
-	TYPE_RATE        int32 = 2
-	TYPE_GAUGE       int32 = 3
+	TYPE_UNSPECIFIED MetricType = 0
+	TYPE_COUNT       MetricType = 1
+	TYPE_RATE        MetricType = 2
+	TYPE_GAUGE       MetricType = 3
 )
 
-func IsMetricTypeValid(t int32) bool {
+func (t MetricType) IsValid() bool {
 	return t >= TYPE_UNSPECIFIED && t <= TYPE_GAUGE
+}
+
+func (e MetricType) NeedsInterval() bool {
+	return e == TYPE_RATE || e == TYPE_COUNT
 }
 
 type MetricTypeError struct{}

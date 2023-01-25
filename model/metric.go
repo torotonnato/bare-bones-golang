@@ -1,26 +1,26 @@
 package model
 
 type Metric struct {
-	ID             MetricID  `json:"-"`
-	Interval       int64     `json:"interval,omitempty"`
-	Metadata       *Metadata `json:"metadata,omitempty"`
-	Metric         string    `json:"metric"`
-	Points         []Point   `json:"points"`
-	Resources      *Resource `json:"resources,omitempty"`
-	SourceTypeName string    `json:"source_type_name,omitempty"`
-	Tags           Tags      `json:"tags,omitempty"`
-	Type           int32     `json:"type"`
-	Unit           string    `json:"unit,omitempty"`
+	ID             MetricID   `json:"-"`
+	Interval       int64      `json:"interval,omitempty"`
+	Metadata       *Metadata  `json:"metadata,omitempty"`
+	Metric         string     `json:"metric"`
+	Points         []Point    `json:"points"`
+	Resources      *Resource  `json:"resources,omitempty"`
+	SourceTypeName string     `json:"source_type_name,omitempty"`
+	Tags           Tags       `json:"tags,omitempty"`
+	Type           MetricType `json:"type"`
+	Unit           string     `json:"unit,omitempty"`
 }
 
-func NewMetric(name string, t int32) (*Metric, error) {
-	if !IsMetricTypeValid(t) {
+func NewMetric(name string, mType MetricType) (*Metric, error) {
+	if !mType.IsValid() {
 		return nil, MetricTypeError{}
 	}
 	m := &Metric{}
 	m.ID = GetUniqueMetricID()
 	m.Metric = name
-	m.Type = t
+	m.Type = mType
 	return m, nil
 }
 
@@ -58,7 +58,7 @@ func (m *Metric) Clone() *Metric {
 }
 
 func (m *Metric) SetInterval(interval int64) *Metric {
-	if m.Type != TYPE_RATE && m.Type != TYPE_COUNT {
+	if m.Type.NeedsInterval() {
 		m.Interval = 0
 		return m
 	}
