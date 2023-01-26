@@ -32,4 +32,11 @@ Go to example/ and add a config.json file like this:
 
 go run example/main.go
 
-![example](./doc/test.png')
+Log in into DataDog, go to Metrics -> Summary. You should see two new metrics:
+
+    system.sensors.temp1
+    system.sensors.light
+    
+Now export the metrics into a test dashboard.
+
+![example](./doc/test.png)
