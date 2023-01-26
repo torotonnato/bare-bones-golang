@@ -16,9 +16,3 @@ func (t MetricType) IsValid() bool {
 func (e MetricType) NeedsInterval() bool {
 	return e == TYPE_RATE || e == TYPE_COUNT
 }
-
-type MetricTypeError struct{}
-
-func (e MetricTypeError) Error() string {
-	return "metric: invalid type"
-}

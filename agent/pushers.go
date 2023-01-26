@@ -8,7 +8,7 @@ import (
 
 func PushMetric(m *model.Metric, value float64) error {
 	if !state.isRunning {
-		return Error{Code: AgentNotRunning}
+		return Error{AgentNotRunning}
 	}
 	item := MetricItem{
 		ID: m.ID,

@@ -12,13 +12,13 @@ const (
 
 type Error struct {
 	Code   int
-	AuxMsg string
+	auxMsg string
 }
 
 func (e Error) Error() string {
 	switch e.Code {
 	case Generic:
-		return e.AuxMsg
+		return e.auxMsg
 	case BadRequest:
 		return "bad request"
 	case InvalidResponse:
@@ -43,11 +43,11 @@ func (e *APIErrors) ToError() error {
 	err := *e.Errors //Alias
 	if len(err) == 1 {
 		if err[0] == "Bad request" {
-			return Error{Code: BadRequest}
+			return Error{BadRequest, ""}
 		}
 	}
 	return Error{
 		Code:   Generic,
-		AuxMsg: strings.Join(*e.Errors, ", "),
+		auxMsg: strings.Join(*e.Errors, ", "),
 	}
 }

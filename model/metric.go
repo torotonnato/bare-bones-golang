@@ -15,7 +15,7 @@ type Metric struct {
 
 func NewMetric(name string, mType MetricType) (*Metric, error) {
 	if !mType.IsValid() {
-		return nil, MetricTypeError{}
+		return nil, Error{InvalidMetricType}
 	}
 	m := &Metric{}
 	m.ID = GetUniqueMetricID()

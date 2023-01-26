@@ -50,7 +50,7 @@ func Start() error {
 	state.Lock()
 	defer state.Unlock()
 	if state.isRunning {
-		return Error{Code: AgentAlreadyRunning}
+		return Error{AgentAlreadyRunning}
 	}
 	capacity := config.AgentChannelCapacity
 	state.dataChan = rb.NewRingBufferChan[any](capacity)
@@ -66,7 +66,7 @@ func Flush() error {
 	state.Lock()
 	defer state.Unlock()
 	if !state.isRunning {
-		return Error{Code: AgentNotRunning}
+		return Error{AgentNotRunning}
 	}
 	tickerReset()
 	state.cmdChan.InChan <- agentFlush
@@ -77,7 +77,7 @@ func Stop() error {
 	state.Lock()
 	defer state.Unlock()
 	if !state.isRunning {
-		return Error{Code: AgentNotRunning}
+		return Error{AgentNotRunning}
 	}
 	state.cmdChan.InChan <- agentStop
 	state.Wait()
