@@ -6,11 +6,9 @@ type Config struct {
 }
 
 const (
-	AgentMinMetricElementsPerSeries  = 100
-	AgentAvgDistinctMetricsPerSeries = 10
-	AgentAvgPointsPerMetric          = 10
-	AgentChannelCapacity             = 256
-	AgentTickerInterval              = 2
+	AgentMinMetricElementsPerSeries = 100
+	AgentChannelCapacity            = 256
+	AgentTickerInterval             = 2
 )
 
 const (

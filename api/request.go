@@ -9,7 +9,7 @@ import (
 	"github.com/torotonnato/gobarebones/config"
 )
 
-func Request(method string, endPoint string, optData []byte, response interface{}) (int, error) {
+func Request(method, endPoint string, optData []byte, response interface{}) (int, error) {
 	uri := config.Env.Region + endPoint
 	optDataBuff := bytes.NewBuffer(optData)
 	req, err := http.NewRequest(method, uri, optDataBuff)

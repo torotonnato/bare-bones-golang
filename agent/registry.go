@@ -1,8 +1,6 @@
 package agent
 
-import (
-	"github.com/torotonnato/gobarebones/model"
-)
+import "github.com/torotonnato/gobarebones/model"
 
 var regMetrics = make(map[model.MetricID]model.Metric)
 

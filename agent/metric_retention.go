@@ -14,52 +14,51 @@ type MetricItem struct {
 }
 
 type MetricsAccBuffer struct {
-	container []MetricItem
+	buffer []MetricItem
 }
 
 func (a *MetricsAccBuffer) Len() int {
-	return len(a.container)
+	return len(a.buffer)
 }
 
 func (a *MetricsAccBuffer) Swap(i, j int) {
-	a.container[i], a.container[j] = a.container[j], a.container[i]
+	a.buffer[i], a.buffer[j] = a.buffer[j], a.buffer[i]
 }
 
 func (a *MetricsAccBuffer) Less(i, j int) bool {
-	return a.container[i].ID < a.container[j].ID
+	return a.buffer[i].ID < a.buffer[j].ID
 }
 
 func (a *MetricsAccBuffer) Clear() {
-	a.container = nil
+	a.buffer = nil
 }
 
 func (a *MetricsAccBuffer) Accumulate(m *MetricItem) {
-	a.container = append(a.container, *m)
+	a.buffer = append(a.buffer, *m)
 }
 
 func (a *MetricsAccBuffer) PastLimit() bool {
-	return len(a.container) >= config.AgentMinMetricElementsPerSeries
+	limit := config.AgentMinMetricElementsPerSeries
+	return len(a.buffer) >= limit
 }
 
 func (a *MetricsAccBuffer) ToSeries() *model.Series {
-	if len(a.container) == 0 {
+	if len(a.buffer) == 0 {
 		return nil
 	}
 	sort.Sort(a)
-	s := model.Series{}
-	s.Series = make([]model.Metric, 0, config.AgentAvgDistinctMetricsPerSeries)
+	s := model.NewSeries()
 	lastID := model.InvalidMetricID
 	currIdx := -1
-	for _, p := range a.container {
-		if p.ID != lastID {
+	for _, mi := range a.buffer {
+		if mi.ID != lastID {
 			currIdx += 1
-			s.Series = append(s.Series, regMetrics[p.ID])
-			s.Series[currIdx].Points = make([]model.Point, 0, config.AgentAvgPointsPerMetric)
-			lastID = p.ID
+			s.Append(regMetrics[mi.ID])
+			lastID = mi.ID
 		}
-		s.Series[currIdx].Points = append(s.Series[currIdx].Points, p.Point)
+		s.Series[currIdx].AppendPoint(mi.Point)
 	}
-	return &s
+	return s
 }
 
 func (a *MetricsAccBuffer) Send() error {

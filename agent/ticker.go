@@ -1,9 +1,8 @@
 package agent
 
 import (
-	"time"
-
 	"sync"
+	"time"
 
 	"github.com/torotonnato/gobarebones/config"
 )
@@ -18,13 +17,15 @@ func tickerStart() {
 	if beat.ticker != nil {
 		beat.ticker.Stop()
 	}
-	beat.ticker = time.NewTicker(config.AgentTickerInterval * time.Second)
+	interval := config.AgentTickerInterval * time.Second
+	beat.ticker = time.NewTicker(interval)
 	beat.Unlock()
 }
 
 func tickerReset() {
 	beat.Lock()
-	beat.ticker.Reset(config.AgentTickerInterval * time.Second)
+	interval := config.AgentTickerInterval * time.Second
+	beat.ticker.Reset(interval)
 	beat.Unlock()
 }
 

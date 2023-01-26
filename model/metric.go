@@ -96,3 +96,7 @@ func (m *Metric) SetUnit(unit string) *Metric {
 	m.Unit = unit
 	return m
 }
+
+func (m *Metric) AppendPoint(p Point) {
+	m.Points = append(m.Points, p)
+}

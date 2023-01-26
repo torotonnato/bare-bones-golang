@@ -20,11 +20,11 @@ func (e Error) Error() string {
 	case Generic:
 		return e.AuxMsg
 	case BadRequest:
-		return "api: bad request"
+		return "bad request"
 	case InvalidResponse:
-		return "api: invalid response from DataDog server"
+		return "invalid response from DataDog server"
 	}
-	return "api: unknown error"
+	return "unknown error"
 }
 
 // Common API error oject definition
