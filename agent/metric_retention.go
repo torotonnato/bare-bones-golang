@@ -62,8 +62,7 @@ func (a *MetricsAccBuffer) ToSeries() *model.Series {
 }
 
 func (a *MetricsAccBuffer) Send() error {
-	s := a.ToSeries()
-	if s != nil {
+	if s := a.ToSeries(); s != nil {
 		err := api.Series(s)
 		a.Clear()
 		return err

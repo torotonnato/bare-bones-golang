@@ -19,14 +19,10 @@ var state struct {
 	sync.Mutex
 }
 
-func blackhole(x interface{}) {}
-
 func drainChannels() {
-	for item := range state.dataChan {
-		blackhole(item)
+	for range state.dataChan {
 	}
-	for cmd := range state.cmdChan {
-		blackhole(cmd)
+	for range state.cmdChan {
 	}
 }
 
