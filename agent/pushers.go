@@ -17,6 +17,6 @@ func PushMetric(m *model.Metric, value float64) error {
 			Timestamp: time.Now().Unix(),
 		},
 	}
-	state.dataChan <- item
+	state.dataChan.InChan <- item
 	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/torotonnato/gobarebones/config"
+	rb "github.com/torotonnato/gobarebones/ringbufferchan"
 )
 
 const (
@@ -13,24 +14,17 @@ const (
 
 var state struct {
 	isRunning bool
-	dataChan  chan interface{}
-	cmdChan   chan int
+	dataChan  *rb.RingBufferChan[any]
+	cmdChan   *rb.RingBufferChan[int]
 	sync.WaitGroup
 	sync.Mutex
-}
-
-func drainChannels() {
-	for range state.dataChan {
-	}
-	for range state.cmdChan {
-	}
 }
 
 func worker() {
 	metricsBuff := MetricsAccBuffer{}
 	for {
 		select {
-		case item := <-state.dataChan:
+		case item := <-state.dataChan.OutChan:
 			switch data := item.(type) {
 			case MetricItem:
 				metricsBuff.Accumulate(&data)
@@ -39,7 +33,7 @@ func worker() {
 					tickerReset()
 				}
 			}
-		case cmd := <-state.cmdChan:
+		case cmd := <-state.cmdChan.OutChan:
 			if cmd == agentStop {
 				state.Done()
 				return
@@ -59,8 +53,8 @@ func Start() error {
 		return Error{Code: AgentAlreadyRunning}
 	}
 	capacity := config.AgentChannelCapacity
-	state.dataChan = make(chan interface{}, capacity)
-	state.cmdChan = make(chan int, capacity)
+	state.dataChan = rb.NewRingBufferChan[any](capacity)
+	state.cmdChan = rb.NewRingBufferChan[int](capacity)
 	state.Add(1)
 	tickerStart()
 	go worker()
@@ -75,7 +69,7 @@ func Flush() error {
 		return Error{Code: AgentNotRunning}
 	}
 	tickerReset()
-	state.cmdChan <- agentFlush
+	state.cmdChan.InChan <- agentFlush
 	return nil
 }
 
@@ -85,10 +79,11 @@ func Stop() error {
 	if !state.isRunning {
 		return Error{Code: AgentNotRunning}
 	}
-	state.cmdChan <- agentStop
+	state.cmdChan.InChan <- agentStop
 	state.Wait()
 	tickerStop()
-	drainChannels()
+	state.dataChan.Close()
+	state.cmdChan.Close()
 	state.isRunning = false
 	return nil
 }
