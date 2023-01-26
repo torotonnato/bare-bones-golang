@@ -11,7 +11,7 @@ func PushMetric(m *model.Metric, value float64) error {
 		return Error{Code: AgentNotRunning}
 	}
 	item := MetricItem{
-		From: m.ID,
+		ID: m.ID,
 		Point: model.Point{
 			Value:     value,
 			Timestamp: time.Now().Unix(),

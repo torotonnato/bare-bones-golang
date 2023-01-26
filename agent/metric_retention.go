@@ -9,7 +9,7 @@ import (
 )
 
 type MetricItem struct {
-	From model.MetricID
+	ID model.MetricID
 	model.Point
 }
 
@@ -26,7 +26,7 @@ func (a *MetricsAccBuffer) Swap(i, j int) {
 }
 
 func (a *MetricsAccBuffer) Less(i, j int) bool {
-	return a.container[i].From < a.container[j].From
+	return a.container[i].ID < a.container[j].ID
 }
 
 func (a *MetricsAccBuffer) Clear() {
@@ -51,11 +51,11 @@ func (a *MetricsAccBuffer) ToSeries() *model.Series {
 	lastID := model.InvalidMetricID
 	currIdx := -1
 	for _, p := range a.container {
-		if p.From != lastID {
+		if p.ID != lastID {
 			currIdx += 1
-			s.Series = append(s.Series, regMetrics[p.From])
+			s.Series = append(s.Series, regMetrics[p.ID])
 			s.Series[currIdx].Points = make([]model.Point, 0, config.AgentAvgPointsPerMetric)
-			lastID = p.From
+			lastID = p.ID
 		}
 		s.Series[currIdx].Points = append(s.Series[currIdx].Points, p.Point)
 	}

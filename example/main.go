@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"math"
 	"os"
@@ -57,12 +58,13 @@ func main() {
 
 	count := 0
 	for {
-		temp := math.Sin(6.28 * float64(count) / 100.0)
+		temp1 := math.Sin(6.28 * float64(count) / 100.0)
+		agent.PushMetric(t, temp1)
 		light := float64((count % 50) + 30)
-		agent.PushMetric(t, temp)
 		agent.PushMetric(l, light)
-		time.Sleep(100 * time.Millisecond)
-		log.Println(count)
+		time.Sleep(1 * time.Second)
+		status := fmt.Sprintf("tick= %d, temp1= %.2f, light= %.2f", count, temp1, light)
+		log.Println(status)
 		count++
 	}
 }
