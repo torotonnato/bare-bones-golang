@@ -1,18 +1,35 @@
-# gobarebones
+# gobarebones v0.1
 
-# W.I.P.
+# Warning: W.I.P., do not use
 
-A stripped down and embeddable implementation of a DataDog agent in golang.
+A stripped down and embeddable implementation of a DataDog agent in golang that
+is extremely easy to set up and use. You need an API key and the correct hostname
+for your region (look in config/env.go for an hardcoded list).
 
-Five objectives:
-1. Extremely simple setup
-2. Few dependencies, all of them must be from std lib
-3. Push metrics
-4. Push logs
-5. Sending in chunks using a concurrent goroutine
+This package is meant to be simple and was made just for the sake of it so, again,
+DO NOT USE IT yet, especially in production.
+
+The objectives of this little library:
+
+1. Have no dependencies except for the std lib
+2. Just push metrics and logs, nothing else
+3. Do some optimizations to keep it all very lightweight
 
 TODO:
-* Logs
-* Finish the agent
-* Refactor
-* Testing
+- [ ] Logs
+- [x] Agent
+- [x] Refactor
+- [ ] Testing
+
+## How to run the example
+
+Go to example/ and add a config.json file like this:
+
+    {
+        "Region": "https://datadoghq.eu",
+        "APIKey": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
+
+go run example/main.go
+
+![example](./doc/test.png')
