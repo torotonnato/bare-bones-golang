@@ -2,14 +2,19 @@
 
 package ringbufferchan
 
+import "sync"
+
 type RingBufferChan[T any] struct {
 	InChan, OutChan chan T
+	sync.WaitGroup
 }
 
 func NewRingBufferChan[T any](cap int) *RingBufferChan[T] {
-	inChan := make(chan T)
-	outChan := make(chan T, cap)
-	r := RingBufferChan[T]{inChan, outChan}
+	r := RingBufferChan[T]{
+		InChan:  make(chan T),
+		OutChan: make(chan T, cap),
+	}
+	r.Add(1)
 	go r.run()
 	return &r
 }
@@ -24,11 +29,11 @@ func (r *RingBufferChan[T]) run() {
 		}
 	}
 	close(r.OutChan)
+	r.Done()
 }
 
 func (r *RingBufferChan[T]) Close() {
 	close(r.InChan)
-	for range r.OutChan {
-	} //Wait for worker
+	r.Wait()
 	r.InChan, r.OutChan = nil, nil
 }
