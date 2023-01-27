@@ -19,6 +19,7 @@ TODO:
 - [ ] Logs
 - [x] Agent
 - [x] Refactor
+- [x] Metrics
 - [ ] Testing
 
 ## How to run the example
