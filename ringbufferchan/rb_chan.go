@@ -33,7 +33,9 @@ func (r *RingBufferChan[T]) run() {
 }
 
 func (r *RingBufferChan[T]) Close() {
-	close(r.InChan)
-	r.Wait()
-	r.InChan, r.OutChan = nil, nil
+	if r.InChan != nil {
+		close(r.InChan)
+		r.Wait()
+		r.InChan, r.OutChan = nil, nil
+	}
 }
