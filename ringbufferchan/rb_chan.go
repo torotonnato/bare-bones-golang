@@ -5,14 +5,14 @@ package ringbufferchan
 import "sync"
 
 type RingBufferChan[T any] struct {
-	InChan, OutChan chan T
+	WriteChan, ReadChan chan T
 	sync.WaitGroup
 }
 
 func NewRingBufferChan[T any](cap int) *RingBufferChan[T] {
 	r := RingBufferChan[T]{
-		InChan:  make(chan T),
-		OutChan: make(chan T, cap),
+		WriteChan: make(chan T),
+		ReadChan:  make(chan T, cap),
 	}
 	r.Add(1)
 	go r.run()
@@ -20,22 +20,22 @@ func NewRingBufferChan[T any](cap int) *RingBufferChan[T] {
 }
 
 func (r *RingBufferChan[T]) run() {
-	for v := range r.InChan {
+	for v := range r.WriteChan {
 		select {
-		case r.OutChan <- v:
+		case r.ReadChan <- v:
 		default:
-			<-r.OutChan
-			r.OutChan <- v
+			<-r.ReadChan
+			r.ReadChan <- v
 		}
 	}
-	close(r.OutChan)
+	close(r.ReadChan)
 	r.Done()
 }
 
 func (r *RingBufferChan[T]) Close() {
-	if r.InChan != nil {
-		close(r.InChan)
+	if r.WriteChan != nil {
+		close(r.WriteChan)
 		r.Wait()
-		r.InChan, r.OutChan = nil, nil
+		r.WriteChan, r.ReadChan = nil, nil
 	}
 }

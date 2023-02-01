@@ -24,7 +24,7 @@ func worker() {
 	metricsBuff := MetricsAccBuffer{}
 	for {
 		select {
-		case item := <-state.dataChan.OutChan:
+		case item := <-state.dataChan.ReadChan:
 			switch data := item.(type) {
 			case MetricItem:
 				metricsBuff.Accumulate(&data)
@@ -33,7 +33,7 @@ func worker() {
 					tickerReset()
 				}
 			}
-		case cmd := <-state.cmdChan.OutChan:
+		case cmd := <-state.cmdChan.ReadChan:
 			if cmd == agentStop {
 				state.Done()
 				return
@@ -69,7 +69,7 @@ func Flush() error {
 		return Error{AgentNotRunning}
 	}
 	tickerReset()
-	state.cmdChan.InChan <- agentFlush
+	state.cmdChan.WriteChan <- agentFlush
 	return nil
 }
 
@@ -79,7 +79,7 @@ func Stop() error {
 	if !state.isRunning {
 		return Error{AgentNotRunning}
 	}
-	state.cmdChan.InChan <- agentStop
+	state.cmdChan.WriteChan <- agentStop
 	state.Wait()
 	tickerStop()
 	state.dataChan.Close()
